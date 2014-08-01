@@ -20,6 +20,7 @@ public class UsersDAOImpl implements IUsersDAO {
 	protected final String SQL_SELECT_CHECK_LOGIN = SQL_SELECT + " WHERE username LIKE ? AND password LIKE ?";	
 	protected final String SQL_SELECT_USER_BY_USERNAME = SQL_SELECT + " WHERE username = ?";
 	protected final String SQL_SELECT_USERS_BY_USERNAME = SQL_SELECT + " WHERE lastname LIKE ?";
+	protected final String SQL_SELECT_FRIENDS = SQL_SELECT + " JOIN Relations r1 ON Users.user_id = r1.from_id JOIN Relations r2 ON r1.from_id = r2.to_id AND r1.to_id = r2.from_id AND r1.from_id <> r1.to_id WHERE r2.from_id = ?";
 	
 	protected final String SQL_UPDATE_ACTIVITY = "UPDATE Users SET activity = ? WHERE user_id = ?";
 	
@@ -205,12 +206,12 @@ public class UsersDAOImpl implements IUsersDAO {
 	}
 
 	@Override
-	public int deleteUser(int userId) {
+	public int deleteUser(int userID) {
 		QueryJDBC query = new QueryJDBC();
 		int result = 0;
 		try {
 			query.createPreparedStatement(SQL_DELETE);
-			query.setInt(1, userId);
+			query.setInt(1, userID);
 			result = query.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println("Failed to create prepared statement");
@@ -243,6 +244,41 @@ public class UsersDAOImpl implements IUsersDAO {
 			query.close();
 		}
 		return result;
+	}
+
+	@Override
+	public List<User> findFriends(int userID) {
+		QueryJDBC query = new QueryJDBC();
+		List<User> friends = new ArrayList<>();
+		try {
+			query.createPreparedStatement(SQL_SELECT_FRIENDS);
+			query.setInt(1, userID);
+			ResultSet resultSet = query.executeQuery();
+			while(resultSet.next()) {
+				User user = new User();
+				user.setUserID(resultSet.getInt(COLUMN_USER_ID));
+				user.setUsername(resultSet.getString(COLUMN_USERNAME));
+				user.setPassword(resultSet.getString(COLUMN_PASSWORD));
+				user.setEmail(resultSet.getString(COLUMN_EMAIL));
+				user.setType(resultSet.getInt(COLUMN_TYPE_ID));
+				user.setFirstname(resultSet.getString(COLUMN_FIRSTNAME));
+				user.setLastname(resultSet.getString(COLUMN_LASTNAME));
+				user.setActivity(resultSet.getBoolean(COLUMN_ACTIVITY));
+				user.setInfo(resultSet.getString(COLUMN_INFO));
+				user.setPhoto(resultSet.getString(COLUMN_PHOTO));
+				friends.add(user);
+			}
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		} catch (SQLException e) {
+			System.out.println("Failed to create statement");
+			e.printStackTrace();
+		} 
+		finally {
+			query.close();
+		}
+		return friends;
 	}	
  
 }
