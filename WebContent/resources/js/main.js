@@ -424,13 +424,16 @@ $(document).ready(function() {
 				'timestamp' : new Date().getTime()
 			},
 			success : function(data) {
-				$('#messageArea ul').append('<li class="left clearfix"><div class="chat-body clearfix"><div class="header"><strong class="primary-font">You</strong><small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>'
-										+ new Date()
-										+ '</small></div><p>'
-										+ $('#btn-input').val()
-										+ '</p></div></li>');
-				$('#btn-input').val('');
-				return Boolean(data);
+				if (data == 1) {
+					$('#messageArea ul').append('<li class="left clearfix"><div class="chat-body clearfix"><div class="header"><strong class="primary-font">You</strong><small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>'
+											+ new Date()
+											+ '</small></div><p>'
+											+ $('#btn-input').val()
+											+ '</p></div></li>');
+					$('#btn-input').val('');
+				} else {
+					alert("Failed to send message!");
+				}
 			},
 			error : function() {
 				alert("AJAX request failed");
@@ -464,10 +467,8 @@ $(document).ready(function() {
 		});
 	});
 
-	// $('.send-message').on('click', function(event) {
-	// alert($(this).data("sender"), $(this).data("receiver"));
-	// openChat($(this).data("sender"),
-	// $(this).data("receiver"));
-	// });
+	//$('.send-message').on('click', function(event) {
+	//	openChat($(this).data("sender"), $(this).data("receiver"));
+	//});
 
 });

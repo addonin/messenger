@@ -25,8 +25,8 @@
 	                         <div class="col-md-4">
 	                            <ul class="list-group" id="friends">
 	                            <c:forEach items="${friends}" var="friend">
-	                                <%-- <li class="list-group-item">${friend.getLastname()} ${friend.getFirstname()}<a href="javascript: openChat(${user.getUserId()}, ${friend.getUserId()})"><span class="send-message">Message</span></a></li> --%>
-									<li class="list-group-item">${friend.getLastname()} ${friend.getFirstname()}<a href="#" style="display: inline-block;"><span class="glyphicon glyphicon-envelope send-message" data-sender="${user.getUserID()}" data-receiver="${friend.getUserID()}"></span></a></li>
+	                                <li class="list-group-item">${friend.getLastname()} ${friend.getFirstname()}<a href="javascript: openChat(${user.getUserID()}, ${friend.getUserID()})"><span class="send-message">Message</span></a></li>
+									<%-- <li class="list-group-item">${friend.getLastname()} ${friend.getFirstname()}<a href="#" style="display: inline-block;"><span class="glyphicon glyphicon-envelope send-message" data-sender="${user.getUserID()}" data-receiver="${friend.getUserID()}"></span></a></li> --%>
 	                            </c:forEach>
 	                            </ul>
 	                        </div>

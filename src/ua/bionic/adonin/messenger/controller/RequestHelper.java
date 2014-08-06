@@ -8,6 +8,7 @@ import ua.bionic.adonin.messenger.commands.AddRelationCommand;
 import ua.bionic.adonin.messenger.commands.EditCommand;
 import ua.bionic.adonin.messenger.commands.FindRelationCommand;
 import ua.bionic.adonin.messenger.commands.FindUsersCommand;
+import ua.bionic.adonin.messenger.commands.GetConversationCommand;
 import ua.bionic.adonin.messenger.commands.HomeCommand;
 import ua.bionic.adonin.messenger.commands.ICommand;
 import ua.bionic.adonin.messenger.commands.LoginCommand;
@@ -17,6 +18,7 @@ import ua.bionic.adonin.messenger.commands.NoCommand;
 import ua.bionic.adonin.messenger.commands.PeopleCommand;
 import ua.bionic.adonin.messenger.commands.RegisterCommand;
 import ua.bionic.adonin.messenger.commands.DeleteRelationCommand;
+import ua.bionic.adonin.messenger.commands.SendMessageCommand;
 
 public class RequestHelper {
 	
@@ -35,6 +37,8 @@ public class RequestHelper {
       commands.put("addrelation", new AddRelationCommand());
       commands.put("deleterelation", new DeleteRelationCommand());
       commands.put("findrelation", new FindRelationCommand());
+      commands.put("getconversation", new GetConversationCommand());
+      commands.put("sendmessage", new SendMessageCommand());
     }
     
     public ICommand getCommand(HttpServletRequest request){
