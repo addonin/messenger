@@ -6,11 +6,20 @@ import java.util.Date;
 public class Message implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	private int messageID;
 	private int senderID;
 	private int receiverID;
 	private String text;
 	private boolean status;
 	private Date timestamp;
+
+	public int getMessageID() {
+		return messageID;
+	}
+
+	public void setMessageID(int messageID) {
+		this.messageID = messageID;
+	}
 	
 	public int getSenderID() {
 		return senderID;

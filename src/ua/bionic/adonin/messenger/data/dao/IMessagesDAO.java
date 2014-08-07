@@ -9,8 +9,8 @@ public interface IMessagesDAO {
 	
 	public int addMessage(int senderID, int receiverID, String text);	
 	public List<Message> findMessages(int senderID, int receiverID);
-	public Map<Integer, Integer> findUnread(int receiverID);
-	public UnsupportedOperationException updateMessage();
+	public Map<Integer, Integer> findUnread(int receiverID);	
+	public int updateMessage(int messageID, boolean status);
 	public UnsupportedOperationException deleteMessage();	
 	
 }

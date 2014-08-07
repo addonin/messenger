@@ -60,7 +60,8 @@ public class GetConversationCommand implements ICommand {
             for (Message message : list) {
                 JSONObject jsonObject = new JSONObject();
                 try {
-                        jsonObject.put("senderId", message.getSenderID());
+                		jsonObject.put("messageId", message.getMessageID());
+                		jsonObject.put("senderId", message.getSenderID());
                         jsonObject.put("receiverId", message.getReceiverID());
                         jsonObject.put("text", message.getText());
                         jsonObject.put("status", message.getStatus());

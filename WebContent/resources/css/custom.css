@@ -297,7 +297,7 @@ textarea {
 }
 
 /* TextMessage */
-a:first-child span {
+.send-message {
 	float: right;
 }
 

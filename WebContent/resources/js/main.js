@@ -1,4 +1,3 @@
-var userId = "";
 var sender = "";
 var receiver = "";
 
@@ -172,6 +171,55 @@ function findRelation(from, to) {
 	});
 }
 
+function getUpdates() {
+	$.ajax({
+		type : 'POST',
+		url : 'controller',
+		dataType : 'json',
+		data : {
+			'ajaxCommand' : "getupdates"				
+		},
+		success : function(data) {
+			var result = eval(data);				
+			if (result instanceof Object) {
+				var sum = 0;
+				jQuery.each(result, function(key, val) {
+					sum += val;
+				});
+				if (sum > 0) {
+					$("#unreadSum").text(sum);
+				} else {
+					$("#unreadSum").empty();
+				}			
+				$(".friendBadge").empty();
+				jQuery.each(result, function(key, val) {					
+					$("#friend" + key).find(".badge").text(val);
+				});
+				
+				/*if (sender != "" && receiver != "") {
+					openChat(sender, receiver);
+				}*/
+				
+				/*$('#unreadMessages').empty();
+				for (var i = 0; i < result.length; i++) {
+					$('#unreadMessages').append('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" data-message_id="'
+											+ result[i].messageId
+											+ '">&times;</a><strong>From '
+											+ result[i].senderId
+											+ '</strong>'
+											+ result[i].timestamp
+											+ '<br/>'
+											+ result[i].text
+											+ '</div>');
+				}*/
+			}
+		},
+		error : function() {
+			alert("AJAX request failed");
+		}
+	});
+}
+
 function openChat(sender_id, receiver_id) {
 	$.ajax({
 		type : 'POST',
@@ -185,6 +233,7 @@ function openChat(sender_id, receiver_id) {
 		success : function(data) {
 			$('#messageArea ul').empty();
 			$("#chatWindow").show();
+			getUpdates();
 			var jsonMessages = $.parseJSON(data);
 			for (var i = 0; i < jsonMessages.length; i++) {
 				var timestamp = new Date(jsonMessages[i].timestamp);
@@ -195,20 +244,42 @@ function openChat(sender_id, receiver_id) {
 						+ timestamp.getMinutes() + ":"
 						+ timestamp.getSeconds();
 				if (jsonMessages[i].receiverId === receiver_id) {
-					$('#messageArea ul').append('<li class="left clearfix"><div class="chat-body clearfix"><div class="header"><strong class="primary-font">You</strong><small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>'
+					var out = $('#messageArea ul').append('<li class="left clearfix"><div class="chat-body clearfix"><div class="header"><strong class="primary-font">You</strong><small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>'
 											+ timestamp
 											+ '</small></div><p>'
 											+ jsonMessages[i].text
 											+ '</p></div></li>');
+					/*if (jsonMessages[i].status == false) {
+						out.find("div").css("background-color", "AliceBlue");
+					}*/
 				} else if (jsonMessages[i].receiverId === sender_id) {
-					$('#messageArea ul').append('<li class="right clearfix"><div class="chat-body clearfix"><div class="header"><strong class="pull-right primary-font">'
+					var incoming = $('#messageArea ul').append('<li class="right clearfix"><div class="chat-body clearfix"><div class="header"><strong class="pull-right primary-font">'
 											+ jsonMessages[i].senderId
 											+ '</strong><small class=" text-muted"><span class="glyphicon glyphicon-time"></span>'
 											+ timestamp
 											+ '</small></div><p>'
 											+ jsonMessages[i].text
 											+ '</p></div></li>');
+					/*if (jsonMessages[i].status == false) {
+						incoming.find("div").css("background-color", "green");
+					}*/
 				}
+				if (jsonMessages[i].status == false) {
+					$.ajax({
+						type : 'POST',
+						url : 'controller',
+						dataType : 'text',
+						data : {
+							'ajaxCommand' : "updatemessage",
+							'messageId' : jsonMessages[i].messageId,
+							'status' : true
+						},
+						success : function(data) {
+							alert("Message was updated");
+						}
+					});
+				}
+				
 			}
 		},
 		error : function() {
@@ -222,44 +293,9 @@ function openChat(sender_id, receiver_id) {
 }
 
 $(document).ready(function() {
-
-	userId = $('#userId').val();
-
-	var interval = setInterval(function() {
-		$.ajax({
-			type : 'POST',
-			url : 'controller',
-			dataType : 'text',
-			data : {
-				'ajaxCommand' : "getupdates",
-				'userId' : userId
-			},
-			success : function(data) {
-				var result = eval(data);
-				if (result instanceof Object) {
-					$('#unreadMessages').empty();
-					for (var i = 0; i < result.length; i++) {
-						$('#unreadMessages').append('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" data-message_id="'
-												+ result[i].messageId
-												+ '">&times;</a><strong>From '
-												+ result[i].senderId
-												+ '</strong>'
-												+ result[i].timestamp
-												+ '<br/>'
-												+ result[i].text
-												+ '</div>');
-					}
-				} else if (result > 0) {
-					$('#messagesButton').html('Messages <span class="badge">'
-											+ result
-											+ '</span>');
-				}
-			},
-			error : function() {
-				alert("AJAX request failed");
-			}
-		});
-	}, 10000);
+	
+	getUpdates();
+	var interval = setInterval(getUpdates, 10000);
 
 	$('#myTab a').click(function(e) {
 		e.preventDefault();
@@ -408,6 +444,8 @@ $(document).ready(function() {
 				&& button.has(e.target).length === 0
 				&& chatWindow.has(e.target).length === 0) {
 			$("#chatWindow").hide();
+			sender = "";
+			receiver = "";
 		}
 	});
 
@@ -466,9 +504,5 @@ $(document).ready(function() {
 			}
 		});
 	});
-
-	//$('.send-message').on('click', function(event) {
-	//	openChat($(this).data("sender"), $(this).data("receiver"));
-	//});
 
 });
